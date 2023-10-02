@@ -40,7 +40,7 @@ $\Delta$N = -$\tau$ N*$\Delta$t {Where, $\tau$ is the decay constant}
 On rearranging,
 $\frac{\Delta N}{N}$ = -$\tau$*$\Delta$t
 
-Integrating the equation for the half life conditions.i.e. initial nuclie = $N_{o}$ and final nuclie = $\frac{N_{o}}{2}$ \& stating time  = 0 , final time = $t_{1/2}$
+Integrating for initial nuclie = $N_{o}$ and final nuclie = $\frac{N_{o}}{2}$ \& stating time  = 0 , final time = $t_{1/2}$)
 
 $\int_{N_{o}}^{\frac{N_{o}}{2}}\frac{\Delta N}{N} = \int_{0}^{t_{1/2}}-\tau*\Delta t$
 
@@ -92,8 +92,7 @@ Firstly a new plot is made with 1000 years as a step width(Figure 2).
 To find the value of the rate at 2 times of half life, a library called \textbf{'numpy'} is used as following: rate\_interp = numpy.interp(2*$t_{1/2}$, value of x axis, value of y axis)
 Also, in the problem there has be a comparison made, like if we consider the 2nd order of the taylor expansion, will there be any improvement in the prediction?
 Taylor series is as follows,
-$N(t+\Delta t) = N(t) - \frac{\tau \Delta t}{2} N(t) + \frac{\tau^2 (\Delta t)^2}{2}$
-
+$N(t+\Delta t) = N(t) - \frac{\tau \Delta t}{2} N(t) + \frac{\tau^2 (\Delta t)^2}{2}$\\
 Following is the output from the python code (Refer \hyperref[fig:Rate of radioactive decay for step width = 10, 100, 1000]{Figure 2} for the overview plot):
 \begin{enumerate}
     \item Rate at 11400 years = 1306582.89 ;for step width = 10.
@@ -101,14 +100,15 @@ Following is the output from the python code (Refer \hyperref[fig:Rate of radioa
     \item Rate at 11400 years = 1195355.27 ;for step width = 1000.
     \item Rate at 11400 years = 1234940.25 ;for step width = 1000 considering the 2nd order.
 \end{enumerate}
-
-\textbf{Conclusion:} When comparing the step width of 1000 years, it has percentage of deviation as following (Refer \hyperref[fig:Rate of radioactive decay for step width = 1000, with 2nd order term]{Figure 3} for the comparison plot):
-
-Without 2nd order = $\frac{\left|1195355.27 - 1306582.89\right|}{1306582.89} \times 100 = 8\%$
-
-With 2nd order = $\frac{\left|1234940.25 - 1306582.89\right|}{1306582.89} \times 100 = 5\% $
-
+Conclusion: When comparing the step width of 1000 years, it has percentage of deviation as following (Refer \hyperref[fig:Rate of radioactive decay for step width = 1000, with 2nd order term]{Figure 3} for the comparison plot):
+\begin{raggedright}
+\begin{justify}
+Without 2nd order = $\frac{\left|1195355.27 - 1306582.89\right|}{1306582.89} \times 100 = 8\%$\\
+With 2nd order = $\frac{\left|1234940.25 - 1306582.89\right|}{1306582.89} \times 100 = 5\% $\\
 So, it is clear that deviation from the exact result can be reduced if we include second-order term. But the key is to keep the step width as small as possible.
+\end{justify}
+\end{raggedright}
+
 
 \begin{figure}[b]
     \centering
@@ -222,9 +222,7 @@ x\_trajectory[i+1] = x\_trajectory[i]+vx[i]*dt\\
 y\_trajectory[i+1] = y\_trajectory[i]+vy[i]*dt \textit{(loop will run until y\_trajectory is zero again)}\\
 vx[i+1] = vx[i]-$\frac{-C*0.0014*1.29*\sqrt{vx^2+vy^2}*vx[i]}{m}*dt - \frac{S_0 * \omega}{m}*vy[i]*dt$\\
 vy[i+1] = vy[i]-g*dt-$\frac{-C*0.0014*1.29*\sqrt{vx^2+vy^2}*vy[i]}{m}*dt + \frac{S_0 * \omega}{m}*vx[i]*dt$\\
-
 Refer \hyperref[fig:Spin_Dimpled_Fdrag_trajectory]{Figure 7} for the comparison plot\\
-
 Refer \hyperref[fig:trajectory]{Figure 8} for comparing all the 4 scenarios together
 \end{justify}
 \end{raggedright}
