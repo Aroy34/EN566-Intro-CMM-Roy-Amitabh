@@ -44,7 +44,7 @@ def golf_trajectory():
     plt.figure(figsize=(9, 7))
     '''For loop for cyclying though each conditons
     and through all the given angles'''
-    for condition in range(4):
+    for condition in range(3,4):
         for k in range(len(theta)):
             if condition == 0:
                 # Emptying the list
@@ -179,7 +179,7 @@ def golf_trajectory():
                     else:
                         vx_dds.append(
                             vx_dds[i]+(-1*0.5*d*A*math.sqrt(vx_dds[i]**2+vy_dds[i]**2)
-                                       * vx_dds[i]*dt)/m-0.25*vy_dds[i]*dt*dt)  # Appeding the next value
+                                       * vx_dds[i]*dt)/m-0.25*vy_dds[i]*dt)  # Appeding the next value
                         vy_dds.append(
                             vy_dds[i]-g*dt+(-1*0.5*d*A*vy_dds[i]*dt)/m+0.25
                             * vx_dds[i]*dt)  # Appeding the next value
