@@ -22,7 +22,7 @@
 \rhead{Amitabh Roy}
 
 \begin{document}
-\begin{justify}
+
 \section{Problem Description}
 The objective of the HW2 is to solve the problem of radioactive decay of C-14 isotope and also to predict the trajectory of the gold ball. The radioactivity and the golf trajectory problem can be solved using the Euler's method and finally write a python code for doing the calculations.  Mathematical relations for section can be found below:
 
@@ -168,7 +168,7 @@ Refer \hyperref[fig:ideal_trajectory]{Figure 4} for the comparison plot
 \begin{figure}[b]
     \centering
     \includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{Golf_Trajectory_Ideal.jpeg}
-    \caption{Smooth Golf ball trajectory with external force acting on it $\theta$ = 45◦, 30◦, 15◦ and 9◦}
+    \caption{Smooth Golf ball trajectory with external force acting on it $\theta$ = 45, 30, 15 and 9 degrees}
     \label{fig:ideal_trajectory}
 \end{figure}
 
@@ -190,7 +190,7 @@ Refer \hyperref[fig:Smooth_Fdrag_trajectory]{Figure 5} for the comparison plot
 \begin{figure}[b]
     \centering
     \includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{Golf_Trajectory_Smooth_Drag.jpeg}
-    \caption{Smooth Golf ball trajectory with drag force acting on it $\theta$ = 45◦, 30◦, 15◦ and 9◦}
+    \caption{Smooth Golf ball trajectory with drag force acting on it $\theta$ = 45, 30, 15 and 9 degrees}
     \label{fig:Smooth_Fdrag_trajectory}
 \end{figure}
 
@@ -210,7 +210,7 @@ Refer \hyperref[fig:Dimpled_Fdrag_trajectory]{Figure 6} for the comparison plot
 \begin{figure}[b]
     \centering
     \includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{Golf_Trajectory_Smooth_Drag.jpeg}
-    \caption{Dimpled Golf ball trajectory with drag force acting on it $\theta$ = 45◦, 30◦, 15◦ and 9◦}
+    \caption{Dimpled Golf ball trajectory with drag force acting on it $\theta$ = 45, 30, 15 and 9 degrees}
     \label{fig:Dimpled_Fdrag_trajectory}
 \end{figure}
 
@@ -225,20 +225,29 @@ x\_trajectory[i+1] = x\_trajectory[i]+vx[i]*dt\\
 y\_trajectory[i+1] = y\_trajectory[i]+vy[i]*dt \textit{(loop will run until y\_trajectory is zero again)}\\
 vx[i+1] = vx[i]-$\frac{-C*0.0014*1.29*\sqrt{vx^2+vy^2}*vx[i]}{m}*dt - \frac{S_0 * \omega}{m}*vy[i]*dt$\\
 vy[i+1] = vy[i]-g*dt-$\frac{-C*0.0014*1.29*\sqrt{vx^2+vy^2}*vy[i]}{m}*dt + \frac{S_0 * \omega}{m}*vx[i]*dt$\\
+
 Refer \hyperref[fig:Spin_Dimpled_Fdrag_trajectory]{Figure 7} for the comparison plot
+
+Refer \hyperref[fig:trajectory]{Figure 8} for the comparison plot
 \end{justify}
 \end{raggedright}
 \begin{figure}[b]
     \centering
     \includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{Golf_Trajectory_Spin_Dimpled_drag.jpeg}
-    \caption{Dimpled Golf ball trajectory with spin and drag force acting on it $\theta$ = 45◦, 30◦, 15◦ and 9◦}
+    \caption{Dimpled Golf ball trajectory with spin and drag force acting on it $\theta$ = 45, 30, 15 and 9 degrees}
     \label{fig:Spin_Dimpled_Fdrag_trajectory}
 \end{figure}
 
+\begin{figure}[b]
+    \centering
+    \includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{Golf_Trajectory.jpeg}
+    \caption{Golf ball trajectory - Comparision $\theta$ = 45, 30, 15 and 9 degrees}
+    \label{fig:trajectory}
+\end{figure}
 \section{Contributions}
 \begin{enumerate}
     \item I would like to thanks the professor corey, TA Kumar , Alison and Jelly. It was their  teaching and/or initial round of discussion which gave me the framework to think on.
 \end{enumerate}
 
-\end{justify}  
+  
 \end{document}
