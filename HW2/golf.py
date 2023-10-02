@@ -1,8 +1,6 @@
 # Import matplotlib.pyplot for plotting the graph
-# import numpy for the array of x-axis and the cos(x)/sin(x)/sinc(x)
-# Impprt math for doing mathermatical operations
+# Import math for doing mathermatical operations
 # Import argparse for passing arguments from the terminal to python code
-import numpy as np
 import matplotlib.pyplot as plt
 import math
 import argparse as argp
@@ -42,14 +40,14 @@ def golf_trajectory():
                      help="enter the value of theta seperated by ','")
     arg = psr.parse_args()
     angle = arg.plot.split(",")
-    theta = [int(angl) for angl in angle]  # converting the angles to integer
+    theta = [int(angl) for angl in angle]  # list of the theta values
     plt.figure(figsize=(9, 7))
     '''For loop for cyclying though each conditons
     and through all the given angles'''
     for condition in range(4):
         for k in range(len(theta)):
             if condition == 0:
-                # deleting the values to resure the same variable
+                # Emptying the list
                 del x_trajec[:]
                 del y_trajec[:]
                 del vx[:]
@@ -80,7 +78,7 @@ def golf_trajectory():
                          ':', label=str(theta[k])+"°"+"(Ideal)")
 
             if condition == 1:
-                # deleting the values to resure the same variable
+                # Emptying the list
                 del x_trajec_d[:]
                 del y_trajec_d[:]
                 del vx_d[:]
@@ -113,7 +111,7 @@ def golf_trajectory():
                          label=str(theta[k])+"°"+"(Drag)")
 
             if condition == 2:
-                # deleting the values to resure the same variable
+                # Emptying the list
                 del x_trajec_dd[:]
                 del y_trajec_dd[:]
                 del vx_dd[:]
@@ -153,7 +151,7 @@ def golf_trajectory():
                          label=str(theta[k])+"°"+"(Dimpled + Drag)")
 
             if condition == 3:
-                # deleting the values to resure the same variable
+                # Emptying the list
                 del x_trajec_dds[:]
                 del y_trajec_dds[:]
                 del vx_dds[:]
