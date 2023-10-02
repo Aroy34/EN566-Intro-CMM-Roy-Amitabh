@@ -1,7 +1,7 @@
 \documentclass[11pt]{article}
 \usepackage{multirow}
 \usepackage{hyperref}
-\usepackage[margin=0.75in, top=1in]{geometry} 
+\usepackage[margin=1in, top=1.5in]{geometry} 
 \usepackage{titling} 
 \usepackage{fancyhdr}
 \usepackage{cancel}
@@ -57,9 +57,6 @@ Value of $\tau = -\frac{\log\ 0.5}{5700}$
 
 $\tau$ = 8223.36\, \text{years}\textsuperscript{-1}
 
-\begin{figure}[h]
-
-\end{figure}
 
 \subsection{Python code to plot the rate of the radioactive decay vs time}
 \begin{raggedright}
@@ -226,9 +223,9 @@ y\_trajectory[i+1] = y\_trajectory[i]+vy[i]*dt \textit{(loop will run until y\_t
 vx[i+1] = vx[i]-$\frac{-C*0.0014*1.29*\sqrt{vx^2+vy^2}*vx[i]}{m}*dt - \frac{S_0 * \omega}{m}*vy[i]*dt$\\
 vy[i+1] = vy[i]-g*dt-$\frac{-C*0.0014*1.29*\sqrt{vx^2+vy^2}*vy[i]}{m}*dt + \frac{S_0 * \omega}{m}*vx[i]*dt$\\
 
-Refer \hyperref[fig:Spin_Dimpled_Fdrag_trajectory]{Figure 7} for the comparison plot
+Refer \hyperref[fig:Spin_Dimpled_Fdrag_trajectory]{Figure 7} for the comparison plot\\
 
-Refer \hyperref[fig:trajectory]{Figure 8} for the comparison plot
+Refer \hyperref[fig:trajectory]{Figure 8} for comparing all the 4 scenarios together
 \end{justify}
 \end{raggedright}
 \begin{figure}[b]
@@ -246,7 +243,7 @@ Refer \hyperref[fig:trajectory]{Figure 8} for the comparison plot
 \end{figure}
 \section{Contributions}
 \begin{enumerate}
-    \item I would like to thanks the professor corey, TA Kumar , Alison and Jelly. It was their  teaching and/or initial round of discussion which gave me the framework to think on.
+    \item I would like to thanks the Professor Corey Oses, Teaching Assistant Kumar Miskin , Alison and Jelly. It was their  teaching and/or initial round of discussion which gave me the framework to think on.
 \end{enumerate}
 
   
