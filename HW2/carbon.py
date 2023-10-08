@@ -96,4 +96,4 @@ def beta_decay():
 
 
 if __name__ == "__main__":
-    beta_decay()  # Calling the function
+    beta_decay()  # Calling the function (make carbon WIDTH=10,100,1000)
