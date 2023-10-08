@@ -201,4 +201,4 @@ def golf_trajectory():
 
 
 if __name__ == "__main__":
-    golf_trajectory()  # calling the function
+    golf_trajectory()  # calling the function (make golf THETA=45,35,15,9)
