@@ -1,0 +1,23 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Create your 2D array where values represent plot styles
+# For this example, I'll create a random 10x10 array
+array = np.random.randint(0, 3, (10, 10))  # Values 0, 1, 2 to represent different styles
+
+
+# Create x and y coordinates based on the array shape
+x_coords, y_coords = np.meshgrid(np.arange(array.shape[1]), np.arange(array.shape[0]))
+
+# Flatten the coordinates and array values
+x = x_coords.flatten()
+y = y_coords.flatten()
+values = array.flatten()
+
+# Scatter plot with values determining the plot style
+plt.scatter(x, y)
+plt.colorbar()  # Add a colorbar to show the value-color mapping
+plt.show()
+
+
+
