@@ -1,5 +1,4 @@
 import matplotlib.pyplot as plt
-import math
 import numpy as np
 
 
@@ -8,11 +7,11 @@ def oscillator():
     g = 9.8
     gamma = 0.25
     alpha_d = 0.2
-    theta0_1 = 1
-    theta0_2 = 1.2
+    theta0_1 = 0.1
+    theta0_2 = 0.12
     omega0 = 1
-    omega_d = 0.935
-    dt = 0.005
+    omega_d = 0.936
+    dt = 0.05
     t = []
     theta_1 = []
     theta_2 = []
@@ -28,15 +27,17 @@ def oscillator():
     i = 0
 
     # Euler cromer
-    while t[i] < 200:
-        omega_1.append(-(g/l*theta_1[i]*dt) - 2*gamma*omega_1[i]
+    while t[i] < 100:
+        omega_1.append(-(g/l*(theta_1[i])*dt) - 2*gamma*omega_1[i]
                        * dt+alpha_d*np.sin(omega_d*t[i])*dt+omega_1[i])
+        # print(omega_1[i],omega_1[i+1])
         theta_1.append(theta_1[i]+omega_1[i+1]*dt)
+        print(theta_1[i],theta_1[i+1])
         t.append(t[i]+dt)
         # print(omega_1[i+1],theta_1[i+1], t[i+1])
 
         # theta2
-        omega_2.append(-(g/l*theta_2[i]*dt) - 2*gamma*omega_2[i]
+        omega_2.append(-(g/l*(theta_2[i])*dt) - 2*gamma*omega_2[i]
                        * dt+alpha_d*np.sin(omega_d*t[i])*dt+omega_2[i])
         theta_2.append(theta_2[i]+omega_2[i+1]*dt)
 
@@ -62,6 +63,9 @@ def oscillator():
     plt.plot(t, omega_2, label="omega2")
     plt.title("Euler- Cromer (omega1 - omega2)")
     plt.legend()
+    plt.show()
+
+    # print(omega_1)
 
     # RK4
 
@@ -76,41 +80,41 @@ def oscillator():
     h = 0.1
     i = 0
 
-    while t_values[i] < 1000:
-        # Calculate the four RK4 increments
-        k1_theta = h * omega_values[i]
-        k1_omega = h * \
-            (-(g/l*theta_values[i]) - 2*gamma *
-             omega_values[i]+alpha_d*np.sin(omega_d*t[i]))
+    # while t_values[i] < 1000:
+    #     # Calculate the four RK4 increments
+    #     k1_theta = h * omega_values[i]
+    #     k1_omega = h * \
+    #         (-(g/l*theta_values[i]) - 2*gamma *
+    #          omega_values[i]+alpha_d*np.sin(omega_d*t[i]))
 
-        k2_theta = h * (omega_values[i] + 0.5 * k1_omega)
-        k2_omega = h * (-(g / l) * theta_values[i] - 2 * gamma * omega_values[i] + alpha_d * np.sin(omega_d * t[i]) + 0.5 * (-g / l) * (
-            theta_values[i] + 0.5 * k1_theta) - 2 * gamma * (omega_values[i] + 0.5 * k1_omega) + alpha_d * np.sin(omega_d * (t[i] + 0.5 * h)))
+    #     k2_theta = h * (omega_values[i] + 0.5 * k1_omega)
+    #     k2_omega = h * (-(g / l) * theta_values[i] - 2 * gamma * omega_values[i] + alpha_d * np.sin(omega_d * t[i]) + 0.5 * (-g / l) * (
+    #         theta_values[i] + 0.5 * k1_theta) - 2 * gamma * (omega_values[i] + 0.5 * k1_omega) + alpha_d * np.sin(omega_d * (t[i] + 0.5 * h)))
 
-        k3_theta = h * (omega_values[i] + 0.5 * k2_omega)
-        k3_omega = h * (-(g / l) * (theta_values[i] + 0.5 * k2_theta) - 2 * gamma * (
-            omega_values[i] + 0.5 * k2_omega) + alpha_d * np.sin(omega_d * (t[i] + 0.5 * h)))
+    #     k3_theta = h * (omega_values[i] + 0.5 * k2_omega)
+    #     k3_omega = h * (-(g / l) * (theta_values[i] + 0.5 * k2_theta) - 2 * gamma * (
+    #         omega_values[i] + 0.5 * k2_omega) + alpha_d * np.sin(omega_d * (t[i] + 0.5 * h)))
 
-        k4_theta = h * (omega_values[i] + k3_omega)
-        k4_omega = h * (-(g / l) * (theta_values[i] + k3_theta) - 2 * gamma * (
-            omega_values[i] + k3_omega) + alpha_d * np.sin(omega_d * (t[i] + h)))
+    #     k4_theta = h * (omega_values[i] + k3_omega)
+    #     k4_omega = h * (-(g / l) * (theta_values[i] + k3_theta) - 2 * gamma * (
+    #         omega_values[i] + k3_omega) + alpha_d * np.sin(omega_d * (t[i] + h)))
 
-        # Update values
-        theta_values.append((k1_theta + 2 * k2_theta + 2 *
-                            k3_theta + k4_theta) / 6.0 + theta_values[i])
-        omega_values.append((k1_omega + 2 * k2_omega + 2 *
-                            k3_omega + k4_omega) / 6.0 + omega_values[i])
-        t_values.append(t_values[i]+h)
+    #     # Update values
+    #     theta_values.append((k1_theta + 2 * k2_theta + 2 *
+    #                         k3_theta + k4_theta) / 6.0 + theta_values[i])
+    #     omega_values.append((k1_omega + 2 * k2_omega + 2 *
+    #                         k3_omega + k4_omega) / 6.0 + omega_values[i])
+    #     t_values.append(t_values[i]+h)
 
-        # print(omega_values[i],theta_values[i])
-        i = i+1
+    #     # print(omega_values[i],theta_values[i])
+    #     i = i+1
 
-    plt.figure(4, figsize=(5, 3))
-    plt.plot(t_values, theta_values, label="tehta_rk")
-    plt.plot(t_values, omega_values, label="omega_rk")
-    plt.title("Runge Kutte - 4th order")
-    plt.legend()
-    plt.show(block=True)
+    # plt.figure(4, figsize=(5, 3))
+    # plt.plot(t_values, theta_values, label="tehta_rk")
+    # plt.plot(t_values, omega_values, label="omega_rk")
+    # plt.title("Runge Kutte - 4th order")
+    # plt.legend()
+    # plt.show(block=True)
 
 
 if __name__ == "__main__":

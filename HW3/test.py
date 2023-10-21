@@ -8,7 +8,7 @@ def oscillator():
     gamma = 0.25
     q = [2*gamma]
     alpha_d = 0.2
-    theta0_1 = 1
+    theta0_1 = 0.11
     omega0 = 1
     omega_d = [0,1,2,3,4,5,6,7,8,9,10]
     dt = [0.001]
@@ -43,22 +43,22 @@ def oscillator():
                 plt.plot(t, theta_1, label=f"Driving force (Omega_d) = {omega_d[l]}")
                 plt.title("When we use Euler-cramer, with a driving force ")
                 plt.legend()
+        phase_= []
         amplitude = max(theta_1)
         peak_index = np.argmax(theta_1)
-        phase_shift = t[peak_index] * omega_d[l]
-        amplitudes.append(amplitude)
-        phase_shifts.append(phase_shift)
+        phase_.append(t[peak_index])
+        for i in range(1,len(phase_)):
+            phase_shifts.append(phase_[i]-phase_[0])
+
+
+        
     
     plt.figure(2)
     plt.plot(omega_d, amplitudes, label= "amplitude")
     plt.figure(3)
-    plt.plot(omega_d, phase_shifts, label= "phase s")
+    plt.plot(omega_d[1:], phase_shifts, label= "phase s")
     plt.legend()
-
-
-
     plt.show()
     
-
 if __name__ == "__main__":
     oscillator()
