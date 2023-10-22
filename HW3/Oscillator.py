@@ -22,9 +22,9 @@ def oscillator():
     g = 9.8
     gamma = 0.25
     alpha_d = 0.2
-    theta0_1 = 0.15
-    theta0_2 = 0.17
-    omega0 = 1
+    theta0_1 = 0
+    # theta0_2 = 0
+    omega0 = 0
     omega_d = 0.8
     dt = 0.05
 
@@ -34,17 +34,17 @@ def oscillator():
     theta_1 = []
     theta_2 = []
     omega_1 = []
-    omega_2 = []
+    # omega_2 = []
     delta_t = []
     t.append(0)
     theta_1.append(theta0_1)
-    theta_2.append(theta0_2)
+    # theta_2.append(theta0_2)
     omega_1.append(omega0)
-    omega_2.append(omega0)
+    # omega_2.append(omega0)
 
     i = 0
 
-    while t[i] < 200:
+    while t[i] < 100:
         omega_1.append(-(g/l*(theta_1[i])*dt) - 2*gamma*omega_1[i]
                        * dt+alpha_d*np.sin(omega_d*t[i])*dt+omega_1[i])
         # print(omega_1[i],omega_1[i+1])
@@ -54,21 +54,21 @@ def oscillator():
         # print(omega_1[i+1],theta_1[i+1], t[i+1])
 
         # theta2
-        omega_2.append(-(g/l*(theta_2[i])*dt) - 2*gamma*omega_2[i]
-                       * dt+alpha_d*np.sin(omega_d*t[i])*dt+omega_2[i])
-        theta_2.append(theta_2[i]+omega_2[i+1]*dt)
+        # omega_2.append(-(g/l*(theta_2[i])*dt) - 2*gamma*omega_2[i]
+        #                * dt+alpha_d*np.sin(omega_d*t[i])*dt+omega_2[i])
+        # theta_2.append(theta_2[i]+omega_2[i+1]*dt)
 
         i = i+1
 
-        delta_t.append(abs(theta_1[i]-theta_2[i]))
+        # delta_t.append(abs(theta_1[i]-theta_2[i]))
 
         # if omega[i-1] == omega[i]:
         #     False
-    plt.figure(1)
-    plt.semilogx(t[1:], delta_t)
-    plt.title("Delta(theta1 - theta2)")
-    plt.legend()
-    plt.savefig("Delta(theta1 - theta2.pdf")
+    # plt.figure(1)
+    # plt.semilogx(t[1:], delta_t)
+    # plt.title("Delta(theta1 - theta2)")
+    # plt.legend()
+    # plt.savefig("Delta(theta1 - theta2.pdf")
 
     # RK4
     t_values = []
@@ -85,7 +85,7 @@ def oscillator():
 
     i = 0
 
-    while t_values[i] < 200:
+    while t_values[i] < 100:
         # Calculate the four RK4 increments
         k1_theta = dt * omega_values[i]
         k1_omega = dt * \
@@ -129,7 +129,7 @@ def oscillator():
 
         i = 0
 
-        while t_values[i] < 200:
+        while t_values[i] < 100:
             # Calculate the four RK4 increments
             k1_theta = dt * omega_values[i]
             k1_omega = dt * \
@@ -193,10 +193,20 @@ def oscillator():
     plt.plot(driving_freq, amplitude, marker='o', label="fromt the plot")
     plt.title("θ(Driving Force) resonance curve")
     plt.legend()
+    plt.show()
 
 
 
     # Part 2
+    l = 9.8
+    g = 9.8
+    gamma = 0.25
+    alpha_d = 0.2
+    theta0_1 = 0.1
+    omega0 = 0
+    omega_d = 0.8
+    dt = 0.05
+
     del t [:]
     del omega_1 [:]
     del theta_1[:]
@@ -212,29 +222,22 @@ def oscillator():
     PE.append((0.5*g*l*(theta_1[0])**2))
     TE.append((KE[0]+PE[0]))
 
-    i = 0
+    i = 1
 
-    while t[i] < 200:
-        omega_1.append(-(g/l*(theta_1[i])*dt) - 2*gamma*omega_1[i]
-                       * dt+alpha_d*np.sin(omega_d*t[i])*dt+omega_1[i])
-        theta_1.append(theta_1[i]+omega_1[i+1]*dt)
-        t.append(t[i]+dt)
-        KE.append(0.5*g*l**2*(omega_1[i+1]-g/l*theta_1[i+1]*dt)**2)
+    while i < 1000:
+        omega_1.append(-(g/l*(theta_1[i-1])*dt) - 2*gamma*omega_1[i-1]
+                       * dt+alpha_d*np.sin(omega_d*t[i-1])*dt+omega_1[i-1])
+        theta_1.append(theta_1[i-1]+omega_1[i]*dt)
+        t.append(t[i-1]+dt)
+    
+
+        KE.append(0.5 * l**2 * (omega_1[i])**2)
+        PE.append(0.5 * g * l * (theta_1[i])**2)
+        # print(theta_1[i],omega_1[i], KE[i], PE[i])
+        TE.append(PE[i] + KE[i])
         
-        PE.append(0.5*g*l*(theta_1[i+1]+omega_1[i+1]*dt)**2)
-        TE.append((PE[i+1]+KE[i+1]))
-
         i = i+1
-        print(i)
 
-        omega_1.append(omega_1[i] - (g / l * theta_1[i] * dt) - 2 * gamma * omega_1[i] * dt + alpha_d * np.sin(omega_d * t[i]) * dt)
-        theta_1.append(theta_1[i] + omega_1[i+1] * dt)
-        t.append(t[i] + dt)
-        print(PE[i])
-
-        KE.append(0.5 * l**2 * (omega_1[i+1] - g / l * theta_1[i+1] * dt)**2)
-        PE.append(0.5 * g * l * (theta_1[i+1] + omega_1[i+1] * dt)**2)
-        TE.append(PE[i+1] + KE[i+1])
 
     plt.figure(6)
     plt.plot(t, PE, label="PE")
@@ -244,6 +247,100 @@ def oscillator():
     plt.legend()
 
     plt.show()
+
+    # Part 3
+
+    alpha_d_list = [0.2, 1.2]
+    t = []
+    theta_1 = []
+    omega_1 = []
+    
+    for alpha_d in alpha_d_list:
+        del t [:]
+        del theta_1 [:]
+        del omega_1 [:]
+        
+        t.append(0)
+        theta_1.append(theta0_1)
+        omega_1.append(omega0)
+
+        
+        i = 0
+        while t[i] < 100:
+            omega_1.append(-(g/l*np.sin(theta_1[i])*dt) - 2*gamma*omega_1[i]
+                        * dt+alpha_d*np.sin(omega_d*t[i])*dt+omega_1[i])
+            # print(omega_1[i],omega_1[i+1])
+            theta_1.append(theta_1[i]+omega_1[i+1]*dt)
+            print(theta_1[i],theta_1[i+1])
+            t.append(t[i]+dt)
+            # print(omega_1[i+1],theta_1[i+1], t[i+1])
+
+            i = i+1
+
+        # RK4
+        t_values = []
+        theta_values = []
+        omega_values = []
+
+        del t_values [:]
+        del theta_values [:]
+        del omega_values [:]
+
+        t_values.append(0)
+        theta_values.append(theta0_1)
+        omega_values.append(omega0)
+
+        i = 0
+
+        while t_values[i] < 100:
+            # Calculate the four RK4 increments
+            k1_theta = dt * omega_values[i]
+            k1_omega = dt * \
+                (-(g/l*np.sin(theta_values[i])) - 2*gamma *
+                omega_values[i]+alpha_d*np.sin(omega_d*t[i]))
+
+            k2_theta = dt * (omega_values[i] + 0.5 * k1_omega)
+            k2_omega = dt * (-(g / l) * np.sin(theta_values[i]) - 2 * gamma * omega_values[i] + alpha_d * np.sin(omega_d * t[i]) + 0.5 * (-g / l) * (
+                np.sin(theta_values[i]) + 0.5 * k1_theta) - 2 * gamma * (omega_values[i] + 0.5 * k1_omega) + alpha_d * np.sin(omega_d * (t[i] + 0.5 * dt)))
+
+            k3_theta = dt * (omega_values[i] + 0.5 * k2_omega)
+            k3_omega = dt * (-(g / l) * (np.sin(theta_values[i]) + 0.5 * k2_theta) - 2 * gamma * (
+                omega_values[i] + 0.5 * k2_omega) + alpha_d * np.sin(omega_d * (t[i] + 0.5 * dt)))
+
+            k4_theta = dt * (omega_values[i] + k3_omega)
+            k4_omega = dt * (-(g / l) * (np.sin(theta_values[i]) + k3_theta) - 2 * gamma * (
+                omega_values[i] + k3_omega) + alpha_d * np.sin(omega_d * (t[i] + dt)))
+
+            # Update values
+            theta_values.append((k1_theta + 2 * k2_theta + 2 *
+                                k3_theta + k4_theta) / 6.0 + theta_values[i])
+            omega_values.append((k1_omega + 2 * k2_omega + 2 *
+                                k3_omega + k4_omega) / 6.0 + omega_values[i])
+            t_values.append(t_values[i]+dt)
+
+            # print(omega_values[i],theta_values[i])
+            i = i+1
+
+
+        plt.figure(7)
+        plt.plot(t, theta_1, label=f"Euler-Cromer alpha_d = {alpha_d}")
+        plt.plot(t_values, theta_values, label=f"RK4 alpha_d = {alpha_d}")
+        # plt.plot(t, theta_2, label="tehta2o = 3")
+        plt.title("θ (t) for the Euler–Cromer and RK4 [Non Linear vs Linear]")
+        plt.legend()
+        plt.savefig("θ (t) for the Euler–Cromer and RK4[Non Linear vs Linear].pdf")
+
+        plt.figure(8)
+        plt.plot(t, omega_1, label=f"Euler-Cromer alpha_d = {alpha_d}")
+        plt.plot(t_values, omega_values, label=f"RK4 alpha_d = {alpha_d}")
+        # plt.plot(t, omega_2, label="omega2")
+        plt.title("ω (t) for the Euler–Cromer and RK4 methods [Non Linear vs Linear]")
+        plt.legend()
+        plt.savefig("ω (t) for the Euler–Cromer and RK4 methods [Non Linear vs Linear].pdf")
+
+    plt.show()
+
+
 
 if __name__ == "__main__":
     oscillator()
