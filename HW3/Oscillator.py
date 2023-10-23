@@ -15,24 +15,36 @@ print(part_list)
 
 
 def oscillator():
-    l = 9.8
-    g = 9.8
-    gamma = 0.25
-    alpha_d = 0.2
-    theta0 = 0
-    omega0 = 0
-    omega_d = 0.8
-    dt = 0.05
+    """The function can do claculations using euler-cromer
+    RK4 for an pendulum eiter having a liner or non-linear effect"""
+    l = 9.8 # Length in meter
+    g = 9.8 # Accelaration due to gravity
+    gamma = 0.25 # 1/sec
+    alpha_d = 0.2 # rad/sec^2
+    theta0 = 0 # rad
+    omega0 = 0 # rad/sec
+    omega_d = 0.8 # closer to the ressonance frequency (rad/sec)
+    dt = 0.05 # Time step size
 
     # Euler cromer
     def euler_cromer(theta0=0, omeg0=0, omegd=0.8, effect="Linear"):
+        """The function can do claculations using Euler-Cromer for an 
+        pendulum eiter having a liner or non-linear effect.
+        
+        theta0 : Initial guess for angle
+        omeg0 : Initial guess for omega
+        omegd: Value for omega_d
+        effect : Linear or Non-Linear effect
+        
+        Returns: time, theta,omega        
+        """
         theta0_1 = theta0
         omega0 = omeg0
         omega_d = omegd
         # if effect == "non-linear":
-        t = []
-        theta_1 = []
-        omega_1 = []
+        t = [] # List to store time
+        theta_1 = [] # List to store theta
+        omega_1 = [] # List to store omega
 
         t.append(0)
         theta_1.append(theta0_1)
@@ -67,13 +79,24 @@ def oscillator():
 
     # RK4
     def rk4(theta0=0, omeg0=0, omegd=0.8, effect="Linear"):
+        """The function can do claculations using RK4 for an 
+        pendulum eiter having a liner or non-linear effect.
+        
+        theta0 : Initial guess for angle
+        omeg0 : Initial guess for omega
+        omegd: Value for omega_d
+        effect : Linear or Non-Linear effect
+
+        Returns: time, theta,omega
+        
+        """
         theta0_1 = theta0
         omega0 = omeg0
         omega_d = omegd
 
-        t_values = []
-        theta_values = []
-        omega_values = []
+        t_values = [] # List to store time
+        theta_values = [] # List to store theta
+        omega_values = [] # List to store omega
 
         del t_values[:]
         del theta_values[:]
@@ -148,9 +171,15 @@ def oscillator():
         return theta_values, omega_values, t_values
 
     def fit_sin(tt, yy):
-        '''Fit sin to the input time sequence, and return fitting parameters "amp", "omega", "phase", "offset", "freq", "period" and "fitfunc"'''
-        tt = np.array(tt)
-        yy = np.array(yy)
+        """
+        Function take tiem and theta list to fit a sin curve 
+        and then return aplitude and phase
+        
+        returns: fitting parameters "amp", "omega", "phase",
+        "offset", "freq", "period" and "fitfunc
+        """
+        tt = np.array(tt) # Time array
+        yy = np.array(yy) # Theta array
         ff = np.fft.fftfreq(len(tt), (tt[1]-tt[0]))   # assume uniform spacing
         Fyy = abs(np.fft.fft(yy))
         # excluding the zero frequency "peak", which is related to offset
@@ -216,8 +245,6 @@ def oscillator():
                 # plt.savefig(
                 #     f"Oscilatory-Part2: Fitted sin wave for omega_D = {omega_d}.pdf")
             
-            
-
             for i in range(len(phase)-1):
                 phase_shift.append((phase[0]-phase[i+1]))
             
@@ -246,42 +273,44 @@ def oscillator():
 
         elif part_list[i] == 3:
             # Part 3
-            theta0 = 0.1
+            theta0 = 0.1 # Initial guess for the angle
 
-            t = []
-            omega_1 = []
-            theta_1 = []
+            l = 9.8 # Length in meter
+            g = 9.8 # Accelaration due to gravity
+            t_en = []
+            omega_1_en = []
+            theta_1_en = []
 
-            t.append(0)
-            theta_1.append(theta0)
-            omega_1.append(omega0)
+            t_en.append(0)
+            theta_1_en.append(theta0)
+            omega_1_en.append(0)
 
             KE = []
             PE = []
             TE = []
             KE.append(0)
-            PE.append((0.5*g*l*(theta_1[0])**2))
+            PE.append((0.5*g*l*(theta_1_en[0])**2))
             TE.append((KE[0]+PE[0]))
 
             i = 1
 
             while i < 1000:
-                omega_1.append(-(g/l*(theta_1[i-1])*dt) - 2*gamma*omega_1[i-1]
-                               * dt+alpha_d*np.sin(omega_d*t[i-1])*dt+omega_1[i-1])
-                theta_1.append(theta_1[i-1]+omega_1[i]*dt)
-                t.append(t[i-1]+dt)
+                omega_1_en.append(-(g/l*(theta_1_en[i-1])*dt) - 2*gamma*omega_1_en[i-1]
+                               * dt+alpha_d*np.sin(omega_d*t_en[i-1])*dt+omega_1_en[i-1])
+                theta_1_en.append(theta_1_en[i-1]+omega_1_en[i]*dt)
+                t_en.append(t_en[i-1]+dt)
 
-                KE.append(0.5 * l**2 * (omega_1[i])**2)
-                PE.append(0.5 * g * l * (theta_1[i])**2)
+                KE.append(0.5 * l**2 * (omega_1_en[i])**2)
+                PE.append(0.5 * g * l * (theta_1_en[i])**2)
                 # print(theta_1[i],omega_1[i], KE[i], PE[i])
                 TE.append(PE[i] + KE[i])
 
                 i = i+1
 
             plt.figure(5)
-            plt.plot(t, PE, label="Potential Energy")
-            plt.plot(t, KE, label="Kinetic Energy")
-            plt.plot(t, TE, label="Total Energy")
+            plt.plot(t_en, PE, label="Potential Energy")
+            plt.plot(t_en, KE, label="Kinetic Energy")
+            plt.plot(t_en, TE, label="Total Energy")
             plt.title(
                 "Kinetic, potential and total energy when using the Euler–Cromer method")
             plt.xlabel('Time(sec)')
@@ -294,7 +323,7 @@ def oscillator():
 
         elif part_list[i] == 4:
             # Part 4
-            alpha_d_list = [0.2, 1.2]
+            alpha_d_list = [0.2, 1.2] # List of alpha_d
             t = []
             theta_1 = []
             omega_1 = []
@@ -336,15 +365,15 @@ def oscillator():
         elif part_list[i] == 5:
             # Part 5
 
-            delta_theta = np.linspace(0, 0.003, 4).tolist()
-            alpha_d_list = [0.2, 0.5, 1.2]
-            t_values = []
-            theta_values = []
-            omega_values = []
-            theta_lst = []
+            delta_theta = np.linspace(0, 0.003, 4).tolist() # List of theta values
+            alpha_d_list = [0.2, 0.5, 1.2] # List of alpha_d
+            t_values = [] # List to store time
+            theta_values = [] # List to store theta
+            omega_values = [] # List to store omega
+            theta_lst = [] 
             theta_1 = []
             theta_2 = []
-            y = []
+            y = [] # List to y-coordinate
 
             for j in range(len(delta_theta)-1):
                 for alpha_d in alpha_d_list:
@@ -384,7 +413,7 @@ def oscillator():
                     plt.savefig(
                         f"Oscilatory-Part5: |{theta_1[0]} - {theta_2[0]}| with alpha_d (rad_sec) = {alpha_d} using RK4.pdf")
 
-                    # plt.show()
+                    plt.show()
 
 
 if __name__ == "__main__":
