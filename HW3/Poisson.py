@@ -4,20 +4,20 @@ import matplotlib.pyplot as plt
 import argparse as argp
 
 
-def possion():
-    psr = argp.ArgumentParser("Possion")
+def poisson():
+    psr = argp.ArgumentParser("Poisson")
     psr.add_argument('--part', type=str, default=0,
-                        help="enter the part ','") #python Possion.py --part 1,2,3
+                     help="enter the part ','")  # python poisson.py --part 1,2,3
     arg = psr.parse_args()
     part_str = arg.part.split(",")
     part_list = [int(pt) for pt in part_str]  # list fo all the step widths
 
-    total_len = 20 
+    total_len = 20
     a = 0.6
     r = 10
 
-    def jaccobi(tolerance_list,grid_pts):
-        
+    def jacobi(tolerance_list, grid_pts):
+
         return_msg = []
         for grid_points in grid_pts:
             step = total_len/grid_points
@@ -37,48 +37,52 @@ def possion():
             rho[x_neg_cor][y_cor] = -1
 
             new_matrix = np.zeros((matrix_size, matrix_size))
-            
+
             for tol in tolerance_list:
                 print(tol)
                 iterations = 0
-                error = 1e4  # Large dummy error
+                error = 1e4
                 diff = []
 
                 while iterations < 10000 and error > tol:
-                    del diff [:]
+                    del diff[:]
                     print(iterations)
                     new_matrix = np.copy(matrix)
 
                     for j in range(grid_points):
                         for i in range(grid_points):
-                            if X[i][j]**2+Y[i][j] <r**2:
-                                surrounding = [(i-1,j),(i+1,j),(i,j-1),(i,j+1)]
+                            if X[i][j]**2+Y[i][j] < r**2:
+                                surrounding = [
+                                    (i-1, j), (i+1, j), (i, j-1), (i, j+1)]
                                 sum = 0
                                 # valid_surrounding_value.append(rho[i][j]*step**2)
                                 for s in surrounding:
-                                    x,y = s
-                                    if x < grid_points and y<grid_points:
-                                        if X[x][y]**2+Y[x][y]**2 <100:
+                                    x, y = s
+                                    if x < grid_points and y < grid_points:
+                                        if X[x][y]**2+Y[x][y]**2 < 100:
                                             sum = sum + new_matrix[x][y]
 
-                                if iterations >5:
-                                    diff.append(abs((sum/4+(rho[i][j]*step**2)/4)- new_matrix[i][j]))
+                                if iterations > 5:
+                                    diff.append(
+                                        abs((sum/4+(rho[i][j]*step**2)/4) - new_matrix[i][j]))
 
                                 matrix[i][j] = sum/4+(rho[i][j]*step**2)/4
-                
-                    if iterations>5:
+
+                    if iterations > 5:
                         error = np.sum(diff)
                     print(error)
                     iterations += 1
 
-                return_msg.append((grid_points,tol,iterations))
-                
+                return_msg.append((grid_points, tol, iterations))
+
                 plt.figure(figsize=(10, 8))
                 matplotlib.rcParams['xtick.direction'] = 'out'
                 matplotlib.rcParams['ytick.direction'] = 'out'
-                CS = plt.contour(X, Y, np.transpose(matrix), 30, label= f"(Step = {step}, Tolerance = {tol}, Iterations = {iterations} )")  # Make a contour plot
+                CS = plt.contour(X, Y, np.transpose(
+                    matrix), 30, label=f"(Step = {step}, Tolerance = {tol}, Iterations = {iterations} )")  # Make a contour plot
                 plt.clabel(CS, inline=1, fontsize=10)
-                plt.title(f"Jaccobi: Electric Potential of a Static Electric Dipole({step}_{grid_points}_{tol}_{iterations})")
+                plt.title(
+                    f"Jaccobi: Electric Potential of a Static Electric Dipole({step}_{grid_points}_{tol}_{iterations})")
                 CB = plt.colorbar(CS, shrink=0.8, extend='both')
                 plt.legend()
                 plt.xlim(-1, 1)
@@ -87,12 +91,13 @@ def possion():
                 plt.ylabel('Y-Axis')
                 plt.axhline(0, color='black', linestyle='-', linewidth=0.5)
                 plt.axvline(0, color='black', linestyle='-', linewidth=0.5)
-                plt.savefig(f"Jaccobi: Electric Potential of a Static Electric Dipole({step}_{grid_points}_{tol}_{iterations}).pdf")
+                plt.savefig(
+                    f"Jaccobi: Electric Potential of a Static Electric Dipole({step}_{grid_points}_{tol}_{iterations}).pdf")
                 # plt.show()
-            
+
         return return_msg
 
-    def sor(fixed_accy,grid_pts,omega):
+    def sor(fixed_accy, grid_pts, omega):
         return_msg = []
         for grid_points in grid_pts:
             step = total_len/grid_points
@@ -110,46 +115,49 @@ def possion():
 
             rho[x_pos_cor][y_cor] = 1
             rho[x_neg_cor][y_cor] = -1
-            
+
             for fixed_accuracy in fixed_accy:
-        
-                iterations = 0 
+
+                iterations = 0
                 rel_change = 1000
                 diff = []
-                
+
                 while iterations < 1000 and rel_change > fixed_accuracy:
-                    
+
                     print(iterations)
-                    del diff [:]
+                    del diff[:]
 
                     for j in range(grid_points):
                         for i in range(grid_points):
                             sum = 0
-                            if X[i][j]**2+Y[i][j] <r**2:
-                                surrounding = [(i-1,j),(i+1,j),(i,j-1),(i,j+1)]
+                            if X[i][j]**2+Y[i][j] < r**2:
+                                surrounding = [
+                                    (i-1, j), (i+1, j), (i, j-1), (i, j+1)]
                                 for s in surrounding:
-                                    x,y = s
+                                    x, y = s
                                     if x < grid_points and y < grid_points:
                                         if X[x][y]**2+Y[x][y]**2 <= r**2:
                                             sum = sum + matrix_2[x][y]
-                                
-                        
-                            new =(1-omega)*matrix_2[i][j]+omega*sum/4+omega*(rho[i][j]*step**2)/4
+
+                            new = (1-omega)*matrix_2[i][j]+omega * \
+                                sum/4+omega*(rho[i][j]*step**2)/4
                             diff.append(abs(new - matrix_2[i][j]))
                             matrix_2[i][j] = new
 
-                    rel_change=max(diff)
+                    rel_change = max(diff)
                     print(rel_change)
                     iterations += 1
 
-                return_msg.append((grid_points,fixed_accuracy,iterations))
+                return_msg.append((grid_points, fixed_accuracy, iterations))
 
                 plt.figure(figsize=(10, 8))
                 matplotlib.rcParams['xtick.direction'] = 'out'
                 matplotlib.rcParams['ytick.direction'] = 'out'
-                CS = plt.contour(X, Y, np.transpose(matrix_2), 30, label= f"(Step = {step}, Fixed accuracy = {fixed_accuracy}, Iterations = {iterations} )")  # Make a contour plot
+                CS = plt.contour(X, Y, np.transpose(
+                    matrix_2), 30, label=f"(Step = {step}, Fixed accuracy = {fixed_accuracy}, Iterations = {iterations} )")  # Make a contour plot
                 plt.clabel(CS, inline=1, fontsize=10)
-                plt.title(f"SOR: Electric Potential of a Static Electric Dipole({step}_{grid_points}_{fixed_accuracy}_{iterations})")
+                plt.title(
+                    f"SOR: Electric Potential of a Static Electric Dipole({step}_{grid_points}_{fixed_accuracy}_{iterations})")
                 CB = plt.colorbar(CS, shrink=0.8, extend='both')
                 plt.legend()
                 plt.xlim(-1, 1)
@@ -158,31 +166,35 @@ def possion():
                 plt.ylabel('Y-Axis')
                 plt.axhline(0, color='black', linestyle='-', linewidth=0.5)
                 plt.axvline(0, color='black', linestyle='-', linewidth=0.5)
-                plt.savefig(f"SOR: Electric Potential of a Static Electric Dipole ({step}_{grid_points}_{fixed_accuracy}_{iterations}).pdf")
+                plt.savefig(
+                    f"SOR: Electric Potential of a Static Electric Dipole ({step}_{grid_points}_{fixed_accuracy}_{iterations}).pdf")
                 # plt.show()
         return return_msg
 
     for i in range(len(part_list)):
-        if part_list[i] ==1:
+        if part_list[i] == 1:
             grid_num = [400]
             tolerance = [0.0001]
-            msg = jaccobi(tolerance,grid_num)
+            msg = jacobi(tolerance, grid_num)
             for i in range(len(msg)):
-                print(f"Jaccobi: For {msg[i][0]} grid points, it took {msg[i][2]} iteration for tolerance (error) = {msg[i][1]}")
-        elif part_list[i] ==2:
+                print(
+                    f"Jaccobi: For {msg[i][0]} grid points, it took {msg[i][2]} iteration for tolerance (error) = {msg[i][1]}")
+        elif part_list[i] == 2:
             grid_num = [400]
-            tolerance = np.linspace(0.001,0.0001,3).tolist()
-            msg = jaccobi(tolerance,grid_num)
+            tolerance = np.linspace(0.001, 0.0001, 3).tolist()
+            msg = jacobi(tolerance, grid_num)
             for i in range(len(msg)):
-                print(f"Jaccobi: For {msg[i][0]} grid points, it took {msg[i][2]} iteration for tolerance (error) = {msg[i][1]}")
-        elif part_list[i] ==3:
-            grid_num = [200,400,800]
+                print(
+                    f"Jaccobi: For {msg[i][0]} grid points, it took {msg[i][2]} iteration for tolerance (error) = {msg[i][1]}")
+        elif part_list[i] == 3:
+            grid_num = [200, 400, 800]
             fixed_acrcy = [1e-6]
-            omega=1.2
-            msg = sor(fixed_acrcy,grid_num,omega)
+            omega = 1.2
+            msg = sor(fixed_acrcy, grid_num, omega)
             for i in range(len(msg)):
-                print(f"SOR: For {msg[i][0]} grid points, it took {msg[i][2]} iteration for fixed accuracy = {msg[i][1]}")
+                print(
+                    f"SOR: For {msg[i][0]} grid points, it took {msg[i][2]} iteration for fixed accuracy = {msg[i][1]}")
+
 
 if __name__ == "__main__":
-    possion()
-    
+    poisson()

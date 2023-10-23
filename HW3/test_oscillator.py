@@ -1,64 +1,48 @@
-import matplotlib.pyplot as plt
-import math
-import numpy as np
+import numpy
+import scipy.optimize
 
-def oscillator():
-    L = 9.8
-    g = 9.8
-    gamma = 0.25
-    q = [2*gamma]
-    alpha_d = 0.2
-    theta0_1 = 0.11
-    omega0 = 1
-    omega_d = [0,1,2,3,4,5,6,7,8,9,10]
-    dt = [0.001]
-    t = []
-    theta_1 = []
-    omega_1 = []
-    t.append(0)
-    theta_1.append(theta0_1)
-    omega_1.append(omega0)
-    amplitudes = []
-    phase_shifts = []
+def fit_sin(tt, yy):
+    '''Fit sin to the input time sequence, and return fitting parameters "amp", "omega", "phase", "offset", "freq", "period" and "fitfunc"'''
+    tt = numpy.array(tt)
+    yy = numpy.array(yy)
+    ff = numpy.fft.fftfreq(len(tt), (tt[1]-tt[0]))   # assume uniform spacing
+    Fyy = abs(numpy.fft.fft(yy))
+    guess_freq = abs(ff[numpy.argmax(Fyy[1:])+1])   # excluding the zero frequency "peak", which is related to offset
+    guess_amp = numpy.std(yy) * 2.**0.5
+    guess_offset = numpy.mean(yy)
+    guess = numpy.array([guess_amp, 2.*numpy.pi*guess_freq, 0., guess_offset])
 
-    for l in range(len(omega_d)):
-        for k in range(len(q)):
-            for j in range(len(dt)):
-                i = 0
-                del theta_1[:]
-                del omega_1[:]
-                del t[:]
-                t.append(0)
-                theta_1.append(theta0_1)
-                omega_1.append(omega0)
+    def sinfunc(t, A, w, p, c):  return A * numpy.sin(w*t + p) + c
+    popt, pcov = scipy.optimize.curve_fit(sinfunc, tt, yy, p0=guess)
+    A, w, p, c = popt
+    f = w/(2.*numpy.pi)
+    fitfunc = lambda t: A * numpy.sin(w*t + p) + c
+    return {"amp": A, "omega": w, "phase": p, "offset": c, "freq": f, "period": 1./f, "fitfunc": fitfunc, "maxcov": numpy.max(pcov), "rawres": (guess,popt,pcov)}
 
-                #Euler cromer
-                while t[i] < 100:
-                    omega_1.append(omega_1[i]-((g/L)*theta_1[i]*dt[j])-q[k]*omega_1[i]*dt[j]+alpha_d*np.sin((omega_d[l]*t[i]))*dt[j])
-                    theta_1.append(theta_1[i]+omega_1[i+1]*dt[j])
-                    t.append(t[i]+dt[j])
-                    i =i+1
-                
-                plt.figure(1)
-                plt.plot(t, theta_1, label=f"Driving force (Omega_d) = {omega_d[l]}")
-                plt.title("When we use Euler-cramer, with a driving force ")
-                plt.legend()
-        phase_= []
-        amplitude = max(theta_1)
-        peak_index = np.argmax(theta_1)
-        phase_.append(t[peak_index])
-        for i in range(1,len(phase_)):
-            phase_shifts.append(phase_[i]-phase_[0])
+# Example usage:
+if __name__ == '__main__':
+    import matplotlib.pyplot as plt
 
+    # Generate or load your data (replace with your data)
+    time = numpy.linspace(0, 1, 1000)  # Time values
+    data = 2.0 * numpy.sin(2 * numpy.pi * 1.5 * time + numpy.pi/4) + 0.5 * numpy.random.randn(1000)  # Simulated data
 
-        
-    
-    plt.figure(2)
-    plt.plot(omega_d, amplitudes, label= "amplitude")
-    plt.figure(3)
-    plt.plot(omega_d[1:], phase_shifts, label= "phase s")
+    # Call the fit_sin function
+    results = fit_sin(time, data)
+
+    # Extract the fitted parameters
+    amplitude = results['amp']
+    frequency = results['freq']
+    phase_shift = results['phase']
+    offset = results['offset']
+
+    print("Amplitude:", amplitude)
+    print("Frequency:", frequency)
+    print("Phase Shift:", phase_shift)
+    print("Offset:", offset)
+
+    # Plot the data and the fitted sinusoidal function
+    plt.plot(time, data, label='Data')
+    plt.plot(time, results['fitfunc'](time), label='Fitted Sinusoid', linestyle='--')
     plt.legend()
     plt.show()
-    
-if __name__ == "__main__":
-    oscillator()
