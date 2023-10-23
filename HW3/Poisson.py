@@ -173,7 +173,7 @@ def poisson():
 
     for i in range(len(part_list)):
         if part_list[i] == 1:
-            grid_num = [400]
+            grid_num = [800]
             tolerance = [0.0001]
             msg = jacobi(tolerance, grid_num)
             for i in range(len(msg)):

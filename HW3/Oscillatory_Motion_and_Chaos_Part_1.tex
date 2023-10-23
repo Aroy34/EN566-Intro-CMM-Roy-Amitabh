@@ -1,11 +1,128 @@
-\documentclass{article}
-\usepackage{graphicx} % Required for inserting images
+\documentclass[11pt]{article}
+\usepackage{multirow}
+\usepackage{hyperref}
+\usepackage[margin=0.75in, top=1in]{geometry} 
+\usepackage{titling} 
+\usepackage{fancyhdr}
+\usepackage{cancel}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{ragged2e}
+\usepackage{calc}
+\usepackage{here}
+\usepackage{siunitx}
+
+
+
+
+\setlength{\droptitle}{-3cm} 
+\pagestyle{fancy}
+\fancyhf{} 
+\lhead{EN.566: Introduction to Computational Materials Modeling 2023 - HW3}
+\rhead{Amitabh Roy}
 
 \begin{document}
 
-\maketitle
+\section{Problem Description}
+The objective of the HW3 is to solve the problem of Oscillatory Motion and Chaos and also to solve Poisson equation. The Oscillatory problem can be solved using Euler-Cromer or Runge-Kutta method, And to solve the Poisson equation we can use Jacobi or gauss-seidel. Detailed explanation can be found below:
 
-$\frac{dw}{dt} = -\frac{g}{l^2} \dot \theta + $
+\section{Solution to Pendulum Problem}
 
+\subsection{Calculate analytically at what (approximate) value of $\Omega_D$ the resonance occurs. Do you expect the small-angle (linear) approximation to be good?}
+
+\begin{equation}
+\frac{d^2\theta}{dt^2} = -g\theta - 2\gamma\frac{d\theta}{dt} + \alpha_D\sin(\Omega_D t) \tag{1}
+\end{equation}
+
+\begin{equation}
+\theta'' + 2\gamma\theta' + \omega_0^2\theta = F(t) \quad F(t) = \alpha_D \sin(\Omega_D t) \tag{2}
+\end{equation}
+
+Assuming $F(t) = 0$, such that $\theta(t) \sim e^{rt}$, where $r$ is a root.
+
+\begin{equation}
+r^2 + 2\gamma r + \omega_0^2 = 0 \quad r_\pm = -\gamma \pm \sqrt{\gamma^2 - \omega_0^2} \tag{3}
+\end{equation}
+
+\begin{equation}
+\theta(t)_{\text{Homogeneous}} = 
+(Ae^{rt} + Be^{-rt})e^{-\gamma t} \quad \text{if } \gamma \neq \omega_0 \tag{5.1}
+\end{equation}
+
+\begin{equation}
+\theta(t)_{\text{Homogeneous}} = (A + Bt)e^{-\gamma t} \quad \text{if } \gamma = \omega_0
+\tag{5.2}
+\end{equation}
+
+Condition: steady-state (ss)
+
+\begin{equation}
+\theta(t)_{\text{ss}} = \theta_P\sin(\Omega_D t - \phi) \tag{6}
+\end{equation}
+
+Puting eqn (6) into (2) with $F(t) = \alpha D\sin(\Omega_D t)$ results in:
+
+\begin{equation}
+\alpha_D\sin(\Omega_D t) = \frac{\omega_0^2 - \Omega_D^2}{\alpha}\sin(\Omega_D t - \phi) + 2\gamma\Omega_D\cos(\Omega_D t - \phi) \tag{7}
+\end{equation}
+
+As,\begin{equation}
+\sin(\alpha + \beta) = \sin(\alpha)\cos(\beta) + \cos(\alpha)\sin(\beta) \tag{8}
+\end{equation}
+
+\begin{equation}
+\sin(\alpha + \beta) = \sin(\alpha)\left(\frac{\theta_P}{\alpha_D}(\omega_0^2 - \Omega_D^2)\right) + \cos(\alpha)\left(\frac{2\gamma\Omega_D\theta_P}{\alpha_D}\right) \tag{9}
+\end{equation}
+
+Therefore:
+
+\begin{equation}
+\cos(\phi) = \frac{\theta_P}{\alpha_D}(\omega_0^2 - \Omega_D^2)
+\tag{10}
+\end{equation}
+
+\begin{equation}
+\sin(\phi) = \frac{2\gamma\Omega_D\theta_P}{\alpha_D}
+\tag{11}
+\end{equation}
+
+
+Finding, $\theta_P(\Omega_D)$ and $\phi(\Omega_D)$  from $\sin(\phi)$ and $\cos(\phi)$
+
+
+\begin{equation}
+\theta_P(\Omega_D) = \frac{\alpha_D}{\sqrt{(\omega_0^2 - \Omega_D^2)^2 + 4\gamma^2\Omega_D^2}} \tag{12}
+\end{equation}
+
+
+\begin{equation}
+\phi(\Omega_D) = \arctan\left(\frac{2\gamma\Omega_D}{\omega_0^2 - \Omega_D^2}\right) \tag{13}
+\end{equation}
+
+To find $\Omega_{\text{Res}}$ analytically, we can equate the first derivative of to zero:
+
+\begin{equation}
+\frac{d\theta_P}{d\Omega} = 0  \tag{13}
+\end{equation}
+
+On solving we will get
+
+\begin{equation}
+    \quad \Omega_{\text{Res}} = \sqrt{\omega_0^2 - 2\gamma^2} \tag{14}
+\end{equation}
+
+On taking,
+\begin{equation}
+    \omega_0 = 1 {sec^{-1}} \tag{15}
+\end{equation}
+
+\begin{equation}
+    \gamma = 0.25 {sec^{-1}} \tag{16}
+\end{equation}
+
+We get,
+\begin{equation}
+    \Omega_{\text{Res}} = 0.935 \text{ rad/sec} \tag{17}
+\end{equation}
 
 \end{document}

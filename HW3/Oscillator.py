@@ -300,43 +300,43 @@ def oscillator():
             omega_1 = []
 
             for alpha_d in alpha_d_list:
-                theta_1, omega_1, t = euler_cromer(
-                    0, 0, 0.8, effect="Non-Linear")
+                theta_1, omega_1, t = rk4(
+                    0, 0, 0.8)
                 theta_values, omega_values, t_values = rk4(
                     0, 0, 0.8, effect="Non-Linear")
 
                 plt.figure(6)
-                plt.plot(t, theta_1, label=f"Euler-Cromer alpha_d = {alpha_d}")
+                plt.plot(t, theta_1, label=f"Linear = {alpha_d}")
                 plt.plot(t_values, theta_values,
-                         label=f"RK4 alpha_d = {alpha_d}")
+                         label=f"Non-linear = {alpha_d}")
                 # plt.plot(t, theta_2, label="tehta2o = 3")
                 plt.title(
-                    "θ (t) for the Euler–Cromer and RK4 [Non Linear vs Linear]")
+                    "θ (t) for the RK4 ")
                 plt.xlabel('Time(sec)')
                 plt.ylabel('Theta(rad)')
                 plt.legend()
                 plt.savefig(
-                    "Oscilatory-Part4: θ (t) for the Euler–Cromer and RK4 [Non Linear vs Linear].pdf")
+                    "Oscilatory-Part4: θ (t) for the RK4 [Non Linear vs Linear].pdf")
 
                 plt.figure(7)
-                plt.plot(t, omega_1, label=f"Euler-Cromer alpha_d = {alpha_d}")
+                plt.plot(t, omega_1, label=f"Linear = {alpha_d}")
                 plt.plot(t_values, omega_values,
-                         label=f"RK4 alpha_d = {alpha_d}")
+                         label=f"Non-Linear = {alpha_d}")
                 # plt.plot(t, omega_2, label="omega2")
                 plt.title(
-                    "ω (t) for the Euler–Cromer and RK4 methods [Non Linear vs Linear]")
+                    "ω (t) for the RK4 methods ")
                 plt.xlabel('Time(sec)')
                 plt.ylabel('ω (rad/sec)')
                 plt.legend()
                 plt.savefig(
-                    "Oscilatory-Part4: ω (t) for the Euler–Cromer and RK4 methods [Non Linear vs Linear].pdf")
+                    "Oscilatory-Part4: ω (t) for the RK4 methods [Non Linear vs Linear].pdf")
 
             plt.show()
 
         elif part_list[i] == 5:
             # Part 5
 
-            delta_theta = np.linspace(0, 0.002, 3).tolist()
+            delta_theta = np.linspace(0, 0.003, 4).tolist()
             alpha_d_list = [0.2, 0.5, 1.2]
             t_values = []
             theta_values = []
