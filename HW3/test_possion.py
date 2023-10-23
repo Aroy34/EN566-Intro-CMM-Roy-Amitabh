@@ -1,56 +1,32 @@
-# point_charge.py - Iterative solution of 2-D PDE, electrostatics
-
-import matplotlib
 import numpy as np
-import matplotlib.pyplot as plt
 
-# Set dimensions of the problem
-L = 1.0
-N = 21
-ds = L / N
 
-# Define arrays used for plotting
-x = np.linspace(0, L, N)
-y = np.copy(x)
+
+total_len = 20 
+grid_points = 800
+step = total_len/grid_points
+print(step)
+a = 0.6
+
+# h = np.arange(0,20,step)
+# print(len(h))
+r = 10
+
+x = np.linspace(r, -r, num=grid_points+1)
+y = np.linspace(r, -r, num=grid_points+1)
 X, Y = np.meshgrid(x, y)
+matrix_size = grid_points
+matrix = np.zeros((matrix_size, matrix_size))
+rho = np.zeros((matrix_size, matrix_size))
 
-# Make the charge density matrix
-rho0 = 1.0
-rho = np.zeros((N, N))
-rho[int(round(N/2.0)), int(round(N/2.0))] = rho0
+x_pos_cor = int((grid_points/2)+(0.5*a/step))
+x_neg_cor = int((grid_points/2)-(0.5*a/step))
+y_cor = int(grid_points/2)
+print(x_pos_cor,x_neg_cor,y_cor )
 
-# Make the initial guess for the solution matrix
-V = np.zeros((N, N))
+rho[x_pos_cor][y_cor] = 1
+rho[x_neg_cor][y_cor] = -1
 
-# Solver
-iterations = 0
-eps = 1e-8  # Convergence threshold
-error = 1e4  # Large dummy error
-
-while iterations < 1e4 and error > eps:
-    V_temp = np.copy(V)
-    error = 0
-    print(iterations)
-
-    for j in range(2, N - 1):
-        for i in range(2, N - 1):
-            V[i, j] = 0.25 * (V_temp[i + 1, j] + V_temp[i - 1, j] +
-                              V_temp[i, j - 1] + V_temp[i, j + 1] + rho[i, j] * ds**2)
-            error += abs(V[i, j] - V_temp[i, j])
-
-    iterations += 1
-    error /= float(N)
-
-print("Iterations =", iterations)
-
-# Plotting
-matplotlib.rcParams['xtick.direction'] = 'out'
-matplotlib.rcParams['ytick.direction'] = 'out'
-
-CS = plt.contour(X, Y, V, 30)  # Make a contour plot
-plt.clabel(CS, inline=1, fontsize=10)
-plt.title('PDE solution of a point charge')
-
-CB = plt.colorbar(CS, shrink=0.8, extend='both')
-
-plt.show()
+# print(X[103][100])
+# print(X[100][100])
+print(X[int(grid_points/2)])

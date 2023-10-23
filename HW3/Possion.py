@@ -1,138 +1,188 @@
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
-import matplotlib.colors as mcolors
-import time
+import argparse as argp
 
 
-total_len = 20 
-grid_points = 200
-step = total_len/grid_points
-a = 0.6
+def possion():
+    psr = argp.ArgumentParser("Possion")
+    psr.add_argument('--part', type=str, default=0,
+                        help="enter the part ','") #python Possion.py --part 1,2,3
+    arg = psr.parse_args()
+    part_str = arg.part.split(",")
+    part_list = [int(pt) for pt in part_str]  # list fo all the step widths
 
-# h = np.arange(0,20,step)
-# print(len(h))
-r = 10
-negative = -1
-positive = 1
-surrounding = 0.1
-x_list = []
-y_list = []
-k = 0
+    total_len = 20 
+    a = 0.6
+    r = 10
 
-x = np.linspace(r, -r, num=grid_points)
-y = np.linspace(r, -r, num=grid_points)
-X, Y = np.meshgrid(x, y)
-matrix_size = grid_points
-matrix = np.zeros((matrix_size, matrix_size))
-rho = np.zeros((matrix_size, matrix_size))
+    def jaccobi(tolerance_list,grid_pts):
+        
+        return_msg = []
+        for grid_points in grid_pts:
+            step = total_len/grid_points
 
-x_pos_cor = int((grid_points/2)+(0.3/step))
-x_neg_cor = int((grid_points/2)-(0.3/step))
-y_cor = int(grid_points/2)
+            x = np.linspace(r, -r, num=grid_points+1)
+            y = np.linspace(r, -r, num=grid_points+1)
+            X, Y = np.meshgrid(x, y)
+            matrix_size = grid_points+1
+            matrix = np.zeros((matrix_size, matrix_size))
+            rho = np.zeros((matrix_size, matrix_size))
 
-rho[x_pos_cor][y_cor] = 1
-rho[x_neg_cor][y_cor] = -1
+            x_pos_cor = int((grid_points/2)+(0.5*a/step))
+            x_neg_cor = int((grid_points/2)-(0.5*a/step))
+            y_cor = int(grid_points/2)
 
-print(len(Y[1]))
-new_matrix = np.zeros((matrix_size, matrix_size))
-matrix_2 = np.zeros((matrix_size, matrix_size))
+            rho[x_pos_cor][y_cor] = 1
+            rho[x_neg_cor][y_cor] = -1
 
-coor_toignore = []
+            new_matrix = np.zeros((matrix_size, matrix_size))
+            
+            for tol in tolerance_list:
+                print(tol)
+                iterations = 0
+                error = 1e4  # Large dummy error
+                diff = []
 
-for i in range(len(matrix)):
-    for j in range(len(matrix)):
-        if ((X[i][j])**2 + (Y[i][j])**2 ) >= 100:
-            coor_toignore.append((i,j))
+                while iterations < 10000 and error > tol:
+                    del diff [:]
+                    print(iterations)
+                    new_matrix = np.copy(matrix)
 
-def jaccobi():
-    iterations = 0
-    eps = 1e-2  # Convergence threshold
-    error = 1e4  # Large dummy error
+                    for j in range(grid_points):
+                        for i in range(grid_points):
+                            if X[i][j]**2+Y[i][j] <r**2:
+                                surrounding = [(i-1,j),(i+1,j),(i,j-1),(i,j+1)]
+                                sum = 0
+                                # valid_surrounding_value.append(rho[i][j]*step**2)
+                                for s in surrounding:
+                                    x,y = s
+                                    if x < grid_points and y<grid_points:
+                                        if X[x][y]**2+Y[x][y]**2 <100:
+                                            sum = sum + new_matrix[x][y]
 
-    while iterations < 10000 and error > eps:
-        if iterations >5:
-            error = 0
-        print(iterations)
-        new_matrix = np.copy(matrix)
+                                if iterations >5:
+                                    diff.append(abs((sum/4+(rho[i][j]*step**2)/4)- new_matrix[i][j]))
 
-        for j in range(grid_points):
-            for i in range(grid_points):
-                if X[i][j]**2+Y[i][j] <r**2:
-                    surrounding = [(i-1,j),(i+1,j),(i,j-1),(i,j+1)]
-                    sum = 0
-                    # valid_surrounding_value.append(rho[i][j]*step**2)
-                    for s in surrounding:
-                        x,y = s
-                        if x < grid_points and y<grid_points:
-                            if X[x][y]**2+Y[x][y]**2 <100:
-                                sum = sum + new_matrix[x][y]
+                                matrix[i][j] = sum/4+(rho[i][j]*step**2)/4
+                
+                    if iterations>5:
+                        error = np.sum(diff)
+                    print(error)
+                    iterations += 1
 
-                    error += round(abs(matrix[i, j] - sum/4+(rho[i][j]*step**2)/4),10)
-                    matrix[i, j] = sum/4+(rho[i][j]*step**2)/4
-       
-        print(error)
-        iterations += 1
+                return_msg.append((grid_points,tol,iterations))
+                
+                plt.figure(figsize=(10, 8))
+                matplotlib.rcParams['xtick.direction'] = 'out'
+                matplotlib.rcParams['ytick.direction'] = 'out'
+                CS = plt.contour(X, Y, np.transpose(matrix), 30, label= f"(Step = {step}, Tolerance = {tol}, Iterations = {iterations} )")  # Make a contour plot
+                plt.clabel(CS, inline=1, fontsize=10)
+                plt.title(f"Jaccobi: Electric Potential of a Static Electric Dipole({step}_{grid_points}_{tol}_{iterations})")
+                CB = plt.colorbar(CS, shrink=0.8, extend='both')
+                plt.legend()
+                plt.xlim(-1, 1)
+                plt.ylim(-1, 1)
+                plt.xlabel('X-Axis')
+                plt.ylabel('Y-Axis')
+                plt.axhline(0, color='black', linestyle='-', linewidth=0.5)
+                plt.axvline(0, color='black', linestyle='-', linewidth=0.5)
+                plt.savefig(f"Jaccobi: Electric Potential of a Static Electric Dipole({step}_{grid_points}_{tol}_{iterations}).pdf")
+                # plt.show()
+            
+        return return_msg
 
-    # contours = plt.contour(X, Y, np.transpose(matrix), colors='k')
-    # plt.clabel(contours, inline=True, fontsize=8)
-    plt.imshow(np.transpose(new_matrix), extent=[X.min(), X.max(), Y.min(), Y.max()], aspect='auto', origin='lower')
-    plt.colorbar()
-    # Label the axes
-    plt.xlabel('X-Axis')
-    plt.ylabel('Y-Axis')
-    plt.axhline(0, color='black', linestyle='-', linewidth=0.5)
-    plt.axvline(0, color='black', linestyle='-', linewidth=0.5)
-    # Show the plot
-    plt.xlim(-1, 1)
-    plt.ylim(-1, 1)
-    plt.title("Electric Potential of a Static Electric Dipole - Jaccobi (Step = )" ,step,")")
-    plt.show()
+    def sor(fixed_accy,grid_pts,omega):
+        return_msg = []
+        for grid_points in grid_pts:
+            step = total_len/grid_points
 
-def sor():
-    iterations = 0
-    eps = 1e-3  # Convergence threshold
-    error = 1e4  # Large dummy error
+            x = np.linspace(r, -r, num=grid_points+1)
+            y = np.linspace(r, -r, num=grid_points+1)
+            X, Y = np.meshgrid(x, y)
+            matrix_size = grid_points+1
+            matrix_2 = np.zeros((matrix_size, matrix_size))
+            rho = np.zeros((matrix_size, matrix_size))
 
-    while iterations < 1000 and error > eps:
-        if iterations >5:
-            error = 0
-        print(iterations)
+            x_pos_cor = int((grid_points/2)+(0.5*a/step))
+            x_neg_cor = int((grid_points/2)-(0.5*a/step))
+            y_cor = int(grid_points/2)
 
-        for j in range(200):
-            for i in range(200):
-                if X[i][j]**2+Y[i][j] <100:
-                    surrounding = [(i-1,j),(i+1,j),(i,j-1),(i,j+1)]
-                    sum = 0
-                    for s in surrounding:
-                        x,y = s
-                        if x < 200 and y<200:
-                            if X[x][y]**2+Y[x][y]**2 <=100:
-                                sum = sum + matrix_2[x][y]
+            rho[x_pos_cor][y_cor] = 1
+            rho[x_neg_cor][y_cor] = -1
+            
+            for fixed_accuracy in fixed_accy:
+        
+                iterations = 0 
+                rel_change = 1000
+                diff = []
+                
+                while iterations < 1000 and rel_change > fixed_accuracy:
                     
-                if iterations > 5:
-                    error +=(abs(sum/4+(rho[i][j]*step**2)/4 - matrix_2[i, j]))    
-                matrix_2[i, j] = sum/4+(rho[i][j]*step**2)/4
+                    print(iterations)
+                    del diff [:]
 
-        if iterations > 5:
-            # error /= float(matrix_size)
-            print(error)
-        iterations += 1
+                    for j in range(grid_points):
+                        for i in range(grid_points):
+                            sum = 0
+                            if X[i][j]**2+Y[i][j] <r**2:
+                                surrounding = [(i-1,j),(i+1,j),(i,j-1),(i,j+1)]
+                                for s in surrounding:
+                                    x,y = s
+                                    if x < grid_points and y < grid_points:
+                                        if X[x][y]**2+Y[x][y]**2 <= r**2:
+                                            sum = sum + matrix_2[x][y]
+                                
+                        
+                            new =(1-omega)*matrix_2[i][j]+omega*sum/4+omega*(rho[i][j]*step**2)/4
+                            diff.append(abs(new - matrix_2[i][j]))
+                            matrix_2[i][j] = new
 
-    # contours = plt.contour(X, Y, np.transpose(matrix), colors='b')
-    # plt.clabel(contours,inline=False, fontsize=8)
-    plt.imshow(np.transpose(matrix_2), extent=[X.min(), X.max(), Y.min(), Y.max()], aspect='auto', cmap='jet', origin='lower')
-    plt.colorbar()
-    # Label the axes
-    plt.xlabel('X-Axis_SOR')
-    plt.ylabel('Y-Axis')
-    plt.axhline(0, color='black', linestyle='-', linewidth=0.5)
-    plt.axvline(0, color='black', linestyle='-', linewidth=0.5)
+                    rel_change=max(diff)
+                    print(rel_change)
+                    iterations += 1
 
-    # Show the plot
-    plt.xlim(-1, 1)
-    plt.ylim(-1, 1)
-    plt.show()
+                return_msg.append((grid_points,fixed_accuracy,iterations))
+
+                plt.figure(figsize=(10, 8))
+                matplotlib.rcParams['xtick.direction'] = 'out'
+                matplotlib.rcParams['ytick.direction'] = 'out'
+                CS = plt.contour(X, Y, np.transpose(matrix_2), 30, label= f"(Step = {step}, Fixed accuracy = {fixed_accuracy}, Iterations = {iterations} )")  # Make a contour plot
+                plt.clabel(CS, inline=1, fontsize=10)
+                plt.title(f"SOR: Electric Potential of a Static Electric Dipole({step}_{grid_points}_{fixed_accuracy}_{iterations})")
+                CB = plt.colorbar(CS, shrink=0.8, extend='both')
+                plt.legend()
+                plt.xlim(-1, 1)
+                plt.ylim(-1, 1)
+                plt.xlabel('X-Axis')
+                plt.ylabel('Y-Axis')
+                plt.axhline(0, color='black', linestyle='-', linewidth=0.5)
+                plt.axvline(0, color='black', linestyle='-', linewidth=0.5)
+                plt.savefig(f"SOR: Electric Potential of a Static Electric Dipole ({step}_{grid_points}_{fixed_accuracy}_{iterations}).pdf")
+                # plt.show()
+        return return_msg
+
+    for i in range(len(part_list)):
+        if part_list[i] ==1:
+            grid_num = [400]
+            tolerance = [0.0001]
+            msg = jaccobi(tolerance,grid_num)
+            for i in range(len(msg)):
+                print(f"Jaccobi: For {msg[i][0]} grid points, it took {msg[i][2]} iteration for tolerance (error) = {msg[i][1]}")
+        elif part_list[i] ==2:
+            grid_num = [400]
+            tolerance = np.linspace(0.001,0.0001,3).tolist()
+            msg = jaccobi(tolerance,grid_num)
+            for i in range(len(msg)):
+                print(f"Jaccobi: For {msg[i][0]} grid points, it took {msg[i][2]} iteration for tolerance (error) = {msg[i][1]}")
+        elif part_list[i] ==3:
+            grid_num = [200,400,800]
+            fixed_acrcy = [1e-6]
+            omega=1.2
+            msg = sor(fixed_acrcy,grid_num,omega)
+            for i in range(len(msg)):
+                print(f"SOR: For {msg[i][0]} grid points, it took {msg[i][2]} iteration for fixed accuracy = {msg[i][1]}")
 
 if __name__ == "__main__":
-    jaccobi()
-    # sor()
+    possion()
+    
