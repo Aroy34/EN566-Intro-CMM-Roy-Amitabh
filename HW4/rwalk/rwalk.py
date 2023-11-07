@@ -38,6 +38,7 @@ def walk(step,origin_x,origin_y, show):
         plt.plot(x_ls,y_ls)
         plt.scatter(x_ls[0],y_ls[0], color = 'g')
         plt.scatter(x_ls[-1],y_ls[-1], color = 'r')
+        plt.savefig("Random_walk (n >3).pdf")
         
 
 
@@ -57,7 +58,7 @@ if __name__ == "__main__":
 
     super_lst = [ ]
 
-    plot = False
+    plot = True
     for i in range(walks_rand):
         pos, _, _ = walk((step-step_sw), x, y,plot)
         plot = False
@@ -74,15 +75,16 @@ if __name__ == "__main__":
         x_sq_avg.append(x_avg[i]**2)
     
 
-
     n = (np.arange(0,step,1)).tolist()
     # print(n)
     plt.figure(1)
     plt.plot(n,x_avg)
+    plt.savefig("<x>.pdf")
 
     plt.figure(2)
     slope, intercept = np.polyfit(n, x_sq_avg, 1)
     print(type(slope))
     plt.scatter(n,x_sq_avg,s =1,  label = f"Slope = {round(slope,4)}")
     plt.legend()
+    plt.savefig("<x^2>.pdf")
     plt.show()
