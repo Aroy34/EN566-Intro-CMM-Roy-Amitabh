@@ -7,6 +7,8 @@ import argparse as argp
 def gases(X,Y,iterations,trials):
     grid_s =[]
     time_interval = np.linspace(0,iterations,10,dtype=int).tolist()
+    time_interval = np.linspace(0, iterations, 10, dtype=int).tolist()
+
     
     def lst_update(t1,t2,lst):
         if lst == 0:
@@ -123,8 +125,9 @@ def gases(X,Y,iterations,trials):
         n = 0
                 
         grid_dic = {}
+        grid_dic[0] = np.copy(grid)
         
-        while n < iterations:
+        while n <= iterations:
             
             a_or_b = random.randint(0,1)
             # print(a_or_b)
@@ -166,7 +169,7 @@ def gases(X,Y,iterations,trials):
 if __name__ == "__main__":
     x = 60
     y = 40
-    iterations = 10
+    iterations = 10**7
     psr = argp.ArgumentParser("gases")
     psr.add_argument('--part', type=str, default="1,2,3",
                      help="enter the part , ")  

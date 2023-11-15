@@ -100,8 +100,9 @@ def rwalk():
             plt.title('Mean Square Distance (<r^2>)')
             plt.xlabel('Steps')
             plt.ylabel('Mean Square Distance')
-            plt.savefig("(<r^2>).pdf")
             plt.legend()
+            plt.savefig("(<r^2>).pdf")
+            
 
     plt.show()
 
