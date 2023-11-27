@@ -44,7 +44,7 @@ def golf_trajectory():
     plt.figure(figsize=(9, 7))
     '''For loop for cyclying though each conditons
     and through all the given angles'''
-    for condition in range(0,4):
+    for condition in range(3,4):
         for k in range(len(theta)):
             if condition == 0:
                 # Emptying the list
