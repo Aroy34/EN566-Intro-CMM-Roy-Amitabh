@@ -5,9 +5,19 @@ import numba
 from numba import njit
 from scipy.signal import find_peaks
 
-
 #Using numba to do JIT compilation
-@njit
+@numba.jit(nopython=True)
+def pbc_index(coor, size):
+    # Function to test periodic boundary condition
+    if coor < 0:
+        return size - 1
+    elif coor >= size:
+        return 0
+    else:
+        return coor
+    
+
+@numba.jit(nopython=True)
 def initial_config(n):
     """Giving lattic either the up and down spin with 50% probability """
     config = np.empty((n, n))
@@ -30,8 +40,8 @@ def calculate_energy_vectorized(config, J):
             # centre coordinate
             s = config[i, j]
             # Surrounding coordinates[Periodic Boundary Condition]
-            nb = config[(i+1)%n, j] + config[i, (j+1)%n] + \
-                 config[(i-1)%n, j] + config[i, (j-1)%n]
+            nb = (config[pbc_index(i + 1, n), j] + config[i, pbc_index(j + 1, n)] +
+                  config[pbc_index(i - 1, n), j] + config[i, pbc_index(j - 1, n)])
             energy += -J * s * nb
     return energy
 
@@ -50,8 +60,8 @@ def metropolis_step_vectorized(config, T, J, kB, n):
         i = np.random.randint(n)
         j = np.random.randint(n)
         s = config[i, j]
-        nb = config[(i+1)%n, j] + config[i, (j+1)%n] + \
-             config[(i-1)%n, j] + config[i, (j-1)%n]
+        nb = (config[pbc_index(i + 1, n), j] + config[i, pbc_index(j + 1, n)] +
+                  config[pbc_index(i - 1, n), j] + config[i, pbc_index(j - 1, n)])
         delta_E = 2 * J * s * nb
         # Reverting the flip if conditions meet the criteria
         if delta_E < 0 or np.random.rand() < np.exp(-delta_E / (kB * T)):
@@ -103,14 +113,14 @@ def find_peak_derivative(T, y_values):
 def plotter_first(T, energies, magnetizations, specific_heats, final_configs, n):
     # Find the temperatures corresponding to the maximum derivative for energy and magnetization
     peaks, properties = find_peaks(specific_heats)
-    Tc_from_specific_heat = T[peaks][-1]  # Assuming the last peak corresponds to Tc, if are some noise
+    # Tc_from_specific_heat = T[peaks][-1]  # Assuming the last peak corresponds to Tc, if are some noise
     Tc_from_energy, max_dEdT = find_peak_derivative(T, energies)
     Tc_from_magnetization, max_dMdT = find_peak_derivative(T, magnetizations)
 
     # Energy vs Temperature Plot
     plt.figure()
     plt.plot(T, energies, 'o-')
-    plt.axvline(x=Tc_from_energy, color='r', linestyle='--', label=f'Tc={Tc_from_energy:.2f}')
+    # plt.axvline(x=Tc_from_energy, color='r', linestyle='--', label=f'Tc={Tc_from_energy:.2f}')
     plt.title('Energy vs Temperature')
     plt.xlabel('Temperature (1/kB)')
     plt.ylabel('Energy')
@@ -121,7 +131,7 @@ def plotter_first(T, energies, magnetizations, specific_heats, final_configs, n)
     # Magnetization vs Temperature Plot
     plt.figure()
     plt.plot(T, magnetizations, 'o-')
-    plt.axvline(x=Tc_from_magnetization, color='r', linestyle='--', label=f'Tc={Tc_from_magnetization:.2f}')
+    # plt.axvline(x=Tc_from_magnetization, color='r', linestyle='--', label=f'Tc={Tc_from_magnetization:.2f}')
     plt.title('Magnetization vs Temperature')
     plt.xlabel('Temperature (1/kB)')
     plt.ylabel('Magnetization')
@@ -133,7 +143,7 @@ def plotter_first(T, energies, magnetizations, specific_heats, final_configs, n)
     # Specific Heat vs Temperature Plot
     plt.figure()
     plt.plot(T, specific_heats, 'o-')
-    plt.axvline(x=Tc_from_specific_heat, color='r', linestyle='--', label=f'Tc={Tc_from_specific_heat:.2f}')
+    # plt.axvline(x=Tc_from_specific_heat, color='r', linestyle='--', label=f'Tc={Tc_from_specific_heat:.2f}')
     plt.title('Specific Heat vs Temperature')
     plt.xlabel('Temperature')
     plt.ylabel('Specific Heat')
@@ -151,9 +161,48 @@ def plotter_first(T, energies, magnetizations, specific_heats, final_configs, n)
         plt.close()
 
     # plt.show()
+def plotter_second(T, lattice_sizes, specific_heat_dic, kB):
+    # Plot C vs T for a few sample cases
+    for n in lattice_sizes:
+        plt.figure(figsize=(6, 4))
+        specific_heats = np.array(specific_heat_dic[n])
+        plt.plot(T, specific_heats, label=f'Lattice size {n}x{n}')
+        plt.title(f'Specific Heat vs Temperature for Lattice Size {n}x{n}')
+        plt.xlabel('Temperature (1/kB)')
+        plt.ylabel('Specific Heat (C)')
+        plt.legend()
+        plt.savefig(f"Specific_Heat_vs_Temperature_n{n}.png")
+        plt.close()
+
+    # Calculate Cmax/N for each lattice size
+    max_specific_heats = np.array([np.max(specific_heat_dic[n]) for n in lattice_sizes])
+    N_values = np.array(lattice_sizes)**2  # Total number of spins for each lattice size
+    specific_heat_per_spin = max_specific_heats / N_values
+
+    # Plot Cmax/N vs log(n)
+    plt.figure(figsize=(8, 6))
+    plt.plot(np.log(lattice_sizes), specific_heat_per_spin, 'o-', label='Cmax/N vs log(n)')
+    plt.title('Max Specific Heat per Spin vs Log(Lattice Size)')
+    plt.xlabel('Log(Lattice Size)')
+    plt.ylabel('Max Specific Heat per Spin (Cmax/N)')
+    plt.legend()
+    plt.savefig("Max_Specific_Heat_per_Spin_vs_Log_Lattice_Size.png")
+    plt.close()
+
+    # Plot Cmax/N vs n
+    plt.figure(figsize=(8, 6))
+    plt.plot(lattice_sizes, specific_heat_per_spin, 'o-', label='Cmax/N vs n')
+    plt.title('Max Specific Heat per Spin vs Lattice Size')
+    plt.xlabel('Lattice Size (n)')
+    plt.ylabel('Max Specific Heat per Spin (Cmax/N)')
+    plt.legend()
+    plt.savefig("Max_Specific_Heat_per_Spin_vs_Lattice_Size.png")
+    plt.close()
+    # plt.show()
+
 
 if __name__ == "__main__":
-    mc_steps = 10**5 # Monte Carlo steps per temperature
+    mc_steps = 10**0 # Monte Carlo steps per temperature
     kB = 1   # Boltzmann constant
     J = 1.5 # Interaction strength
    
@@ -173,5 +222,16 @@ if __name__ == "__main__":
             plotter_first(T,energies,magnetizations, specific_heats, final_configs,n)
       
         elif part == 2:
-            pass
+            mc_steps = 10**0 # Reduced Monte Carlo steps per temperature
+            lattice_sizes = [500, 200,100,75,50,40,30,20,10,5]  # Lattice sizes
+            T = np.linspace(1, 5, 30) # Temperature range
+            specific_heat_dic ={}
+            # specific_heat_max = {}
+            for l in lattice_sizes:
+                energies, magnetizations, specific_heats, final_configs = simulate(l, T, J, mc_steps, kB)
+                specific_heats = np.array(specific_heats)
+                specific_heat_dic[l] = specific_heats
+
+            plotter_second(T, lattice_sizes, specific_heat_dic, kB)
+
         
